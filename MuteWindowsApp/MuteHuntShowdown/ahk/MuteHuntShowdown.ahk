@@ -1,13 +1,21 @@
 #Include VA.ahk
 
 !m::  ;Alt + m hotkey - toggle mute state of active window
-  WinGet, ActivePid, PID, A
-  if !(Volume := GetVolumeObject("HuntGame.exe"))
-    MsgBox, There was a problem retrieving the application volume interface
-  VA_ISimpleAudioVolume_GetMute(Volume, Mute)  ;Get mute state
-  ;Msgbox % "Application " ActivePID " is currently " (mute ? "muted" : "not muted")
-  VA_ISimpleAudioVolume_SetMute(Volume, !Mute) ;Toggle mute state
-  ObjRelease(Volume)
+	Process, Exist, HuntGame.exe ; check to see if Printkey.exe is running
+		if (ErrorLevel = 0) ; If it is not running
+		{
+			MsgBox, "HuntGame.exe is not running"
+		}
+		else ; If it is running, ErrorLevel equals the process id for the target program (Printkey). Then close it.
+		{
+			if !(Volume := GetVolumeObject("HuntGame.exe"))
+			{
+				MsgBox, "HuntGame.exe audio device not found"
+			}
+			VA_ISimpleAudioVolume_GetMute(Volume, Mute)  ;Get mute state
+			VA_ISimpleAudioVolume_SetMute(Volume, !Mute) ;Toggle mute state
+			ObjRelease(Volume)
+		}
 return
 
 ;Required for app specific mute
